@@ -1,116 +1,87 @@
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, #74ebd5 0%, #ACB6E5 100%);
-  margin: 0;
-  padding: 0;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+/* App.css */
 
 .container {
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-  max-width: 500px;
-  width: 90%;
-  padding: 30px 40px;
-  text-align: center;
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  flex-wrap: wrap;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f9f9f9;
+  min-height: 100vh;
 }
 
-h2 {
-  margin-bottom: 25px;
-  color: #344055;
-  font-weight: 700;
-  font-size: 2rem;
-  letter-spacing: 1.2px;
+.left-panel {
+  flex: 1 1 320px;
+  max-width: 400px;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgb(0 0 0 / 0.1);
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.right-panel {
+  flex: 2 1 600px;
+  min-height: 450px;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgb(0 0 0 / 0.1);
+  padding: 10px;
+  box-sizing: border-box;
 }
 
 .input-group {
   display: flex;
-  gap: 12px;
-  margin-bottom: 25px;
+  margin-bottom: 16px;
 }
 
-input[type="text"] {
+.input-text {
   flex: 1;
-  padding: 12px 15px;
-  font-size: 1.1rem;
-  border: 2px solid #ddd;
-  border-radius: 10px;
-  transition: all 0.3s ease;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 16px;
 }
 
-input[type="text"]:focus {
-  border-color: #667eea;
-  box-shadow: 0 0 8px rgba(102,126,234, 0.5);
-  outline: none;
-}
-
-button {
-  padding: 12px 25px;
-  font-size: 1.1rem;
-  background: #667eea;
-  border: none;
-  border-radius: 10px;
+.button {
+  margin-left: 10px;
+  padding: 10px 20px;
+  background-color: #007bff;
   color: white;
+  border: none;
+  border-radius: 6px;
   cursor: pointer;
   font-weight: 600;
-  box-shadow: 0 4px 14px rgba(102,126,234,0.39);
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  font-size: 16px;
+  transition: background-color 0.3s;
 }
 
-button:hover {
-  background: #5a67d8;
-  box-shadow: 0 6px 20px rgba(90,103,216,0.5);
+.button:hover {
+  background-color: #0056b3;
 }
 
-.result {
-  background: #f9f9ff;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: inset 0 0 10px #d0d7ff;
-  text-align: left;
-  font-family: 'Courier New', Courier, monospace;
-  color: #344055;
+.error-message {
+  color: red;
+  margin-bottom: 16px;
 }
 
-pre {
-  white-space: pre-wrap;
-  word-break: break-word;
-  font-size: 1rem;
-}
-
-.error {
-  color: #e53e3e;
-  font-weight: 700;
-  margin-bottom: 15px;
-}
-.result table {
+.result-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 10px;
 }
 
-.result td {
-  border: 1px solid #ccc;
-  padding: 8px 12px;
-  text-align: left;
+.result-table td {
+  padding: 8px;
+  border-bottom: 1px solid #eee;
 }
 
-.result .label {
+.label-cell {
   font-weight: 600;
-  background-color: #f0f4ff;
+  color: #444;
   width: 40%;
+  user-select: none;
 }
 
-.result .value {
-  background-color: #ffffff;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  font-weight: 600; 
-  color: #2c3e50; 
-  letter-spacing: 0.05em; 
+.value-cell {
+  color: #222;
 }
-
-

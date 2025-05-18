@@ -1,48 +1,79 @@
-from flask import Flask, jsonify, request
+from flask import Flask, request, jsonify
 import yfinance as yf
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)  # 允許跨域請求
+CORS(app)  # 允許跨域
 
-def get_stock_data(stock_code):
+@app.route('/api/stock_data')
+def stock_data():
+    stock_code = request.args.get('stock_code')
+    if not stock_code:
+        return jsonify({'error': '請提供股票代碼'}), 400
+
+    # 自動補 .TW 或 .US
+    if not (stock_code.endswith('.TW') or stock_code.endswith('.US')):
+        if stock_code.isdigit():
+            stock_code += '.TW'
+        else:
+            stock_code += '.US'
+
     try:
         stock = yf.Ticker(stock_code)
-        data = stock.history(period='1d', interval='1d')
-        print("取得資料:", data)
-        if data.empty:
-            raise ValueError("沒有資料")
-        return data
-    except Exception as e:
-        print(f"錯誤: {e}")
-        return None
+        info = stock.info
 
-@app.route('/api/stock_data', methods=['GET'])
-def stock_data():
-    stock_code = request.args.get('stock_code', '2330.TW')  # 預設帶上 .TW
-    try:
-        data = get_stock_data(stock_code)
-        if data is None:
-            return jsonify({'error': '無法獲取資料，請檢查股票代碼'}), 400
-
-        latest_data = data.tail(1).to_dict(orient='records')[0]
-        latest_date = data.index[-1].strftime('%Y-%m-%d')
-
-        translated_data = {
-            '日期': latest_date,
-            '開盤價': latest_data.get('Open', None),
-            '最高價': latest_data.get('High', None),
-            '最低價': latest_data.get('Low', None),
-            '收盤價': latest_data.get('Close', None),
-            '成交量': latest_data.get('Volume', None),
-            '股息': latest_data.get('Dividends', None),
-            '分割': latest_data.get('Stock Splits', None)
+        data = {
+            '股票代碼': stock_code,
+            '公司名稱': info.get('shortName', '無資料'),
+            '最新價格': info.get('regularMarketPrice', '無資料'),
+            '開盤價': info.get('regularMarketOpen', '無資料'),
+            '最高價': info.get('regularMarketDayHigh', '無資料'),
+            '最低價': info.get('regularMarketDayLow', '無資料'),
+            '成交量': info.get('regularMarketVolume', '無資料'),
+            '市值': info.get('marketCap', '無資料'),
+            '本益比': info.get('trailingPE', '無資料'),
+            '股息殖利率': info.get('dividendYield', '無資料'),
         }
-
-        return jsonify(translated_data)
+        return jsonify(data)
     except Exception as e:
-        print(f"伺服器錯誤: {e}")
-        return jsonify({'error': '伺服器內部錯誤'}), 500
+        return jsonify({'error': f'後端錯誤：{str(e)}'}), 500
+
+
+@app.route('/api/kline_data')
+def get_kline_data():
+    stock_code = request.args.get('stock_code')
+    if not stock_code:
+        return jsonify({'error': '請提供股票代碼'}), 400
+
+    # 自動補 .TW 或 .US
+    if not (stock_code.endswith('.TW') or stock_code.endswith('.US')):
+        if stock_code.isdigit():
+            stock_code += '.TW'
+        else:
+            stock_code += '.US'
+
+    try:
+        ticker = yf.Ticker(stock_code)
+        data = ticker.history(period='10d')  # 最近10天
+
+        if data.empty:
+            return jsonify({'error': '查無資料，可能是代碼錯誤、休市日或資料延遲'}), 404
+
+        result = []
+        for date, row in data.iterrows():
+            result.append({
+                '日期': date.strftime('%Y-%m-%d'),
+                '開盤': round(row['Open'], 2),
+                '最高': round(row['High'], 2),
+                '最低': round(row['Low'], 2),
+                '收盤': round(row['Close'], 2),
+                '成交量': int(row['Volume'])
+            })
+
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'error': f'後端錯誤：{str(e)}'}), 500
+
 
 if __name__ == '__main__':
-    app.run(debug=True, host='localhost', port=5000)
+    app.run(debug=True, port=5000)
