@@ -5,9 +5,16 @@ function App() {
   const [stockData, setStockData] = useState(null);
   const [error, setError] = useState(null);
 
+  // 千分位格式化函式
+  function formatNumberWithCommas(x) {
+    if (x === null || x === undefined) return '-';
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+
   const fetchStockData = async () => {
     setError(null);
     setStockData(null);
+
     if (!stockCode) {
       setError('請輸入股票代碼');
       return;
@@ -27,23 +34,35 @@ function App() {
   };
 
   return (
-    <div style={{ padding: 20, fontFamily: 'Arial' }}>
+    <div className="container">
       <h2>股票查詢</h2>
-      <input
-        type="text"
-        value={stockCode}
-        onChange={(e) => setStockCode(e.target.value)}
-        placeholder="輸入股票代碼，例如 2330.TW"
-        style={{ width: 200, padding: 5 }}
-      />
-      <button onClick={fetchStockData} style={{ marginLeft: 10, padding: '5px 10px' }}>查詢</button>
+      <div className="input-group">
+        <input
+          type="text"
+          value={stockCode}
+          onChange={(e) => setStockCode(e.target.value)}
+          placeholder="輸入股票代碼，例如 2330.TW"
+        />
+        <button onClick={fetchStockData}>查詢</button>
+      </div>
 
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {error && <p className="error">{error}</p>}
 
       {stockData && (
-        <div style={{ marginTop: 20 }}>
+        <div className="result">
           <h3>最新股價資料：</h3>
-          <pre>{JSON.stringify(stockData, null, 2)}</pre>
+          <table>
+            <tbody>
+              {Object.entries(stockData).map(([key, value]) => (
+                <tr key={key}>
+                  <td className="label">{key}</td>
+                  <td className="value">
+                    {key === '成交量' ? formatNumberWithCommas(value) : (value !== null ? value.toString() : '-')}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
     </div>
